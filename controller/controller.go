@@ -5,49 +5,53 @@ import (
 	"encoding/json"
 	"time"
 	"logger/model"
+	"strings"
 )
 
 var AppList map[string]int = make(map[string]int);
-var ServiceList map[string]int = make(map[string]int);
 var Level map[string]int = make(map[string]int);
 
 func init()  {
+	AppList["default"] = 0
 	AppList["ishangqiang"] = 1
 
-	ServiceList["mysql"] = 1
-
 	// level
+	Level["UNKNOWN"] = 0;
 	Level["DEBUG"] = 1;
-	Level["WARNING"] = 2;
+	Level["INFO"] = 2;
+	Level["NOTICE"] = 3;
+	Level["WARNING"] = 4;
+	Level["ERROR"] = 5;
+	Level["ERROR"] = 5;
+	Level["CRITICAL"] = 6;
+	Level["ALERT"] = 7;
+	Level["EMERGENCY"] = 8;
 }
 
 func Log (res http.ResponseWriter, req *http.Request) {
 	app, ok := AppList[req.PostFormValue("app")];
 	if !ok {
-		res.Write(response(1, "没有指定应用或应用不存在", make(map[string]interface{})))
-		return
+		app = AppList["default"]
 	}
-	service, ok := ServiceList[req.PostFormValue("service")];
-	if !ok {
-		res.Write(response(2, "没有指定业务或业务不存在", make(map[string]interface{})))
-		return
+	service := req.PostFormValue("service");
+	if service == "" {
+		service = "unknown"
 	}
-	level, ok := Level[req.PostFormValue("level")];
+	level, ok := Level[strings.ToUpper(req.PostFormValue("level"))];
 	if !ok {
-		res.Write(response(3, "级别不存在", make(map[string]interface{})))
-		return
+		level = Level["UNKNOWN"]
 	}
 	entry := req.PostFormValue("entry")
-	title := req.PostFormValue("title")
-	body := req.PostFormValue("body")
+	message := req.PostFormValue("message")
+	trace := req.PostFormValue("trace")
 	create_time := time.Now().Unix()
 	data := map[string]interface{}{
 		"app": app,
 		"service": service,
 		"level": level,
 		"entry": entry,
-		"title": title,
-		"body": body,
+		"message": message,
+		"trace": trace,
 		"create_time": create_time,
 	}
 	go func() {
