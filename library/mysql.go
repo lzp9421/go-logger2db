@@ -21,7 +21,6 @@ func InitMysql(config *config.Context) {
 		config.StringDefault("dbname", "test"),
 		config.StringDefault("charset", "utf8"),
 		)
-	fmt.Println(dataSourceName)
 	var err error
 	Db, err = sql.Open("mysql", dataSourceName)
 	if err != nil {

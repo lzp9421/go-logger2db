@@ -32,6 +32,6 @@ func main () {
 	handle :=  mux.NewRouter()
 	handle.HandleFunc("/", controller.Log)
 	handle.HandleFunc("log", controller.Log)
-	fmt.Print(HttpHost + strconv.Itoa(HttpPort))
+	fmt.Print(HttpHost + ":" + strconv.Itoa(HttpPort))
 	http.ListenAndServe(HttpHost + ":" + strconv.Itoa(HttpPort), handle)
 }
